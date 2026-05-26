@@ -26,12 +26,18 @@ set(SourceFiles
         Source/PluginEditor.h
         Source/PluginProcessor.cpp
         Source/PluginProcessor.h
+        Source/Synth.h
+        Source/Synth.cpp
+        Source/Voice.h
+        Source/NoiseGenerator.h
+        Source/Utils.h
+        Source/Oscillator.h
 )
 
 juce_add_plugin(${PROJECT_NAME}
-        COMPANY_NAME theaudioprogrammer
-        IS_SYNTH FALSE
-        NEEDS_MIDI_INPUT FALSE
+        COMPANY_NAME LMP_AUDIO
+        IS_SYNTH TRUE
+        NEEDS_MIDI_INPUT TRUE
         NEEDS_MIDI_OUTPUT FALSE
         IS_MIDI_EFFECT FALSE
         EDITOR_WANTS_KEYBOARD_FOCUS FALSE
