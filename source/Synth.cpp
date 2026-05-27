@@ -12,6 +12,9 @@ Synth::Synth()
 void Synth::allocateResources(double sampleRate_, int /*samplesPerBlock*/)
 {
     sampleRate = static_cast<float>(sampleRate_);
+
+    outputLevelSmoother.reset(sampleRate, 0.05f); // 50 ms smoothing
+    outputLevelSmoother.setCurrentAndTargetValue(1.0f);
 }
 
 void Synth::deallocateResources()
@@ -28,24 +31,22 @@ void Synth::render(float** outputBuffers, int sampleCount)
     float* outputBufferLeft = outputBuffers[0];
     float* outputBufferRight = outputBuffers[1];
 
-    for (int sample = 0; sample < sampleCount; ++sample) {
-
+    for (int sample = 0; sample < sampleCount; ++sample)
+    {
         float output = 0.0f;
 
-        if (voice.note > 0) {
-
-            // oscillator sample
+        if (voice.note > 0)
+        {
             output = voice.render();
 
-            // REAL-TIME volume control
-            output *= oscVolume;
+            // smooth volume
+            output *= outputLevelSmoother.getNextValue();
         }
 
         outputBufferLeft[sample] = output;
 
-        if (outputBufferRight != nullptr) {
+        if (outputBufferRight != nullptr)
             outputBufferRight[sample] = output;
-        }
     }
 
     protectYourEars(outputBufferLeft, sampleCount);
@@ -77,7 +78,7 @@ void Synth::noteOn(int note, int velocity)
 
     voice.note = note;
     float freq = 440.0f * std::exp2(float(note - 69) / 12.0f); // this changed
-    voice.osc.amplitude = (velocity / 127.0f) * oscVolume;
+    voice.osc.amplitude = velocity / 127.0f;
     voice.osc.inc = freq / sampleRate;
     voice.osc.reset();
 
@@ -93,9 +94,10 @@ void Synth::noteOff(int note)
 
 void Synth::update(float volumeParam)
 {
-    // convert 0-100 to 0.0-1.0
-    oscVolume = volumeParam / 100.0f;
+    float volume = volumeParam / 100.0f;
 
-    // optional: smoother volume curve
-    oscVolume *= oscVolume;
+    // optional curve
+    volume *= volume;
+
+    outputLevelSmoother.setTargetValue(volume);
 }
