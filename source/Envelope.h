@@ -6,15 +6,19 @@
 #define LMP_MK1_ENVELOPE_H
 
 #pragma once
+
+const float SILENCE = 0.0001f;
+
 class Envelope
 {
 public:
     float nextValue()
     {
-        level *= 0.9999f;
+        level *= multiplier;
         return level;
     }
     float level;
+    float multiplier;
 };
 
 

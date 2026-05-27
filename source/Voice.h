@@ -28,15 +28,22 @@ struct Voice
     // add this method
     float render()
     {
-        return osc.nextSample() * level;
+        float sample = osc.nextSample() * level;
+        float envelope = env.nextValue();
+        return sample * envelope;
+
     }
 
     float render2()
     {
         float sample = osc2.nextSample();
-        saw = saw * 0.997f - sample;
-        return saw;
+        saw = saw * 0.997f + sample;
+        // these lines are new
+        float envelope = env.nextValue();
+        return saw * envelope;
     }
+
+
 };
 
 #endif //LMP_MK1_VOICE_H

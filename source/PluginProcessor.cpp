@@ -17,6 +17,7 @@ LMP_MK1AudioProcessor::LMP_MK1AudioProcessor()
 {
     castParameter(apvts, ParameterID::osc1Level, osc1LevelParam);
     castParameter(apvts, ParameterID::osc2Level, osc2LevelParam);
+    castParameter(apvts, ParameterID::decay, decayParam);
     apvts.state.addListener(this);
 }
 
@@ -158,6 +159,12 @@ void LMP_MK1AudioProcessor::update ()
     float osc2Vol = osc2LevelParam->get();
     synth.update(oscVol);
     synth.update2(osc2Vol);
+
+    float sampleRate = float(getSampleRate());
+
+    float decayTime = decayParam->get();
+    float decayInSamples = sampleRate * decayTime;
+    synth.envDecay = std::exp(std::log(SILENCE)/ decayInSamples);
 }
 
 void LMP_MK1AudioProcessor::splitBufferByEvents(juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
@@ -212,9 +219,7 @@ bool LMP_MK1AudioProcessor::hasEditor() const
 
 juce::AudioProcessorEditor* LMP_MK1AudioProcessor::createEditor()
 {
-    auto editor = new juce::GenericAudioProcessorEditor(*this);
-    editor->setSize(700, 500);
-    return editor;
+    return new LMP_MK1AudioProcessorEditor(*this);
 
 }
 
@@ -257,6 +262,13 @@ LMP_MK1AudioProcessor::createParameterLayout()
     juce::NormalisableRange<float>(0.0f, 100.0f, 1.0f),
     100.0f,
     juce::AudioParameterFloatAttributes().withLabel("%")));
+
+    layout.add(std::make_unique<juce::AudioParameterFloat>(
+    ParameterID::decay,
+    "decay",
+    juce::NormalisableRange<float>(0.01f, 5.0f, 0.01f),
+    0.5f,
+    juce::AudioParameterFloatAttributes().withLabel(" s")));
     return layout;
 }
 

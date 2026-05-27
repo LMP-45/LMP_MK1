@@ -22,6 +22,7 @@ public:
     void update2(float volumeParam2);
     juce::LinearSmoothedValue<float> outputLevelSmoother;
     juce::LinearSmoothedValue<float> output2LevelSmoother;
+    float envDecay;
 private:
 
     void noteOn(int note, int velocity);

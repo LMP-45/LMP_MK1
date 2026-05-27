@@ -18,5 +18,18 @@ private:
     // access the processor object that created it.
     LMP_MK1AudioProcessor& audioProcessor;
 
+    juce::Slider osc1Slider;
+    juce::Slider osc2Slider;
+    juce::Slider decaySlider;
+
+    using SliderAttachment =
+    juce::AudioProcessorValueTreeState::SliderAttachment;
+
+    std::unique_ptr<SliderAttachment> osc1Attachment;
+    std::unique_ptr<SliderAttachment> osc2Attachment;
+    std::unique_ptr<SliderAttachment> decayAttachment;
+
+
+
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (LMP_MK1AudioProcessorEditor)
 };

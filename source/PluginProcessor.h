@@ -8,6 +8,7 @@ namespace ParameterID
 #define PARAMETER_ID(str) const juce::ParameterID str(#str, 1);
     PARAMETER_ID (osc1Level)
     PARAMETER_ID (osc2Level)
+    PARAMETER_ID (decay)
 #undef PARAMETER_ID
 }
 
@@ -69,7 +70,8 @@ private:
 
     Synth synth;
     juce::AudioParameterFloat* osc1LevelParam;
-  juce::AudioParameterFloat* osc2LevelParam;
+    juce::AudioParameterFloat* osc2LevelParam;
+    juce::AudioParameterFloat* decayParam;
     std::atomic<bool> parameterChanged {false };
 
     void update();
