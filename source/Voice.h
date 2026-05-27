@@ -5,20 +5,23 @@
 #ifndef LMP_MK1_VOICE_H
 #define LMP_MK1_VOICE_H
 
+#include "Envelope.h"
 #include "Oscillator.h"
 #include "Oscillator2.h"
 struct Voice
 {
     int note;
     int note2;
-    Oscillator osc; // this is new
+    Oscillator osc;
     Oscillator2 osc2;
+    Envelope env;
 
     float level = 1.0f;
+    float saw;
     void reset()
     {
         note = 0;
-
+        saw = 0.0f;
         osc.reset(); // this is new
         osc2.reset();
     }
@@ -30,7 +33,9 @@ struct Voice
 
     float render2()
     {
-        return osc2.nextSample() * level;
+        float sample = osc2.nextSample();
+        saw = saw * 0.997f - sample;
+        return saw;
     }
 };
 

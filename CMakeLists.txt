@@ -33,6 +33,7 @@ set(SourceFiles
         Source/Utils.h
         Source/Oscillator.h
         Source/Oscillator2.h
+        Source/Envelope.h
 )
 
 juce_add_plugin(${PROJECT_NAME}
