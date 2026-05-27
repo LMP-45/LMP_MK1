@@ -19,8 +19,9 @@ public:
     void render(float** outputBuffers, int sampleCount);
     void midiMessage(uint8_t data0, uint8_t data1, uint8_t data2);
     void update(float volumeParam);
+    void update2(float volumeParam2);
     juce::LinearSmoothedValue<float> outputLevelSmoother;
-
+    juce::LinearSmoothedValue<float> output2LevelSmoother;
 private:
 
     void noteOn(int note, int velocity);

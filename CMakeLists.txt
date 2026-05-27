@@ -32,6 +32,7 @@ set(SourceFiles
         Source/NoiseGenerator.h
         Source/Utils.h
         Source/Oscillator.h
+        Source/Oscillator2.h
 )
 
 juce_add_plugin(${PROJECT_NAME}

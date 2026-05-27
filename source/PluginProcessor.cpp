@@ -16,6 +16,7 @@ LMP_MK1AudioProcessor::LMP_MK1AudioProcessor()
 #endif
 {
     castParameter(apvts, ParameterID::osc1Level, osc1LevelParam);
+    castParameter(apvts, ParameterID::osc2Level, osc2LevelParam);
     apvts.state.addListener(this);
 }
 
@@ -154,7 +155,9 @@ void LMP_MK1AudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce
 void LMP_MK1AudioProcessor::update ()
 {
     float oscVol = osc1LevelParam->get();
+    float osc2Vol = osc2LevelParam->get();
     synth.update(oscVol);
+    synth.update2(osc2Vol);
 }
 
 void LMP_MK1AudioProcessor::splitBufferByEvents(juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
@@ -244,6 +247,13 @@ LMP_MK1AudioProcessor::createParameterLayout()
     layout.add(std::make_unique<juce::AudioParameterFloat>(
     ParameterID::osc1Level,
     "Osc1 Level",
+    juce::NormalisableRange<float>(0.0f, 100.0f, 1.0f),
+    100.0f,
+    juce::AudioParameterFloatAttributes().withLabel("%")));
+
+    layout.add(std::make_unique<juce::AudioParameterFloat>(
+    ParameterID::osc2Level,
+    "Osc2 Level",
     juce::NormalisableRange<float>(0.0f, 100.0f, 1.0f),
     100.0f,
     juce::AudioParameterFloatAttributes().withLabel("%")));
