@@ -103,38 +103,39 @@ void LMP_MK1AudioProcessorEditor::paint (juce::Graphics& g)
     g.setColour(juce::Colours::white);
 
     g.drawText("Osc1 Level",
-    60, 300, 100, 50,
-               juce::Justification::centred);
+            0, 320, 100, 30,
+            juce::Justification::centred);
 
     g.drawText("Osc2 Level",
-               180, 300, 100, 50,
+               80, 320, 100, 30,
                juce::Justification::centred);
 
-    g.drawText("Decay Level",
-               280, 300, 100, 50,
+    g.drawText("D",
+               300, 200, 100, 50,
                juce::Justification::centred);
 
-    g.drawText("attack Level",
-               380, 300, 100, 50,
+    g.drawText("A",
+               230, 200, 100, 50,
                juce::Justification::centred);
 
-    g.drawText("release Level",
-               480, 300, 100, 50,
+    g.drawText("R",
+               440, 200, 100, 50,
                juce::Justification::centred);
 
-    g.drawText("sustain Level",
-               580, 300, 100, 50,
+    g.drawText("S",
+               370, 200, 100, 50,
                juce::Justification::centred);
 
 }
 
 void LMP_MK1AudioProcessorEditor::resized()
 {
-    osc1Slider.setBounds(80, 200, 60, 100);
-    osc2Slider.setBounds(200, 200, 60, 100);
-    decaySlider.setBounds(300, 200, 60, 100);
-    attackSlider.setBounds(400, 200, 60, 100);
-    releaseSlider.setBounds(500, 200, 60, 100);
-    sustainSlider.setBounds(600, 200, 60, 100);
+    osc1Slider.setBounds(20, 350, 60, 50);
+    osc2Slider.setBounds(100, 350, 60, 50);
+
+    decaySlider.setBounds(320, 110, 60, 100);
+    attackSlider.setBounds(250, 110, 60, 100);
+    releaseSlider.setBounds(460, 110, 60, 100);
+    sustainSlider.setBounds(390, 110, 60, 100);
 }
 
