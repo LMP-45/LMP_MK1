@@ -20,14 +20,22 @@ private:
 
     juce::Slider osc1Slider;
     juce::Slider osc2Slider;
+
     juce::Slider decaySlider;
+    juce::Slider attackSlider;
+    juce::Slider releaseSlider;
+    juce::Slider sustainSlider;
 
     using SliderAttachment =
     juce::AudioProcessorValueTreeState::SliderAttachment;
 
     std::unique_ptr<SliderAttachment> osc1Attachment;
     std::unique_ptr<SliderAttachment> osc2Attachment;
+
     std::unique_ptr<SliderAttachment> decayAttachment;
+    std::unique_ptr<SliderAttachment> attackAttachment;
+    std::unique_ptr<SliderAttachment> releaseAttachment;
+    std::unique_ptr<SliderAttachment> sustainAttachment;
 
 
 

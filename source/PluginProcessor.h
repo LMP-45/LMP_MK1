@@ -9,6 +9,9 @@ namespace ParameterID
     PARAMETER_ID (osc1Level)
     PARAMETER_ID (osc2Level)
     PARAMETER_ID (decay)
+    PARAMETER_ID (attack)
+    PARAMETER_ID (release)
+    PARAMETER_ID (sustain)
 #undef PARAMETER_ID
 }
 
@@ -71,7 +74,12 @@ private:
     Synth synth;
     juce::AudioParameterFloat* osc1LevelParam;
     juce::AudioParameterFloat* osc2LevelParam;
+
     juce::AudioParameterFloat* decayParam;
+    juce::AudioParameterFloat* attackParam;
+    juce::AudioParameterFloat* releaseParam;
+    juce::AudioParameterFloat* sustainParam;
+
     std::atomic<bool> parameterChanged {false };
 
     void update();

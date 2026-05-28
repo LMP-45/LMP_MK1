@@ -23,6 +23,9 @@ public:
     juce::LinearSmoothedValue<float> outputLevelSmoother;
     juce::LinearSmoothedValue<float> output2LevelSmoother;
     float envDecay;
+    float envAttack;
+    float envSustain;
+    float envRelease;
 private:
 
     void noteOn(int note, int velocity);

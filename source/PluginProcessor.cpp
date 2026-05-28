@@ -17,7 +17,11 @@ LMP_MK1AudioProcessor::LMP_MK1AudioProcessor()
 {
     castParameter(apvts, ParameterID::osc1Level, osc1LevelParam);
     castParameter(apvts, ParameterID::osc2Level, osc2LevelParam);
+
     castParameter(apvts, ParameterID::decay, decayParam);
+    castParameter(apvts, ParameterID::release, releaseParam);
+    castParameter(apvts, ParameterID::attack, attackParam);
+    castParameter(apvts, ParameterID::sustain, sustainParam);
     apvts.state.addListener(this);
 }
 
@@ -161,10 +165,19 @@ void LMP_MK1AudioProcessor::update ()
     synth.update2(osc2Vol);
 
     float sampleRate = float(getSampleRate());
+    float inverseSampleRate = 1.0f / sampleRate;
 
-    float decayTime = decayParam->get();
-    float decayInSamples = sampleRate * decayTime;
-    synth.envDecay = std::exp(std::log(SILENCE)/ decayInSamples);
+    synth.envAttack = std::exp(-inverseSampleRate * std::exp(5.5f - 0.075f * attackParam->get()));
+    synth.envDecay = std::exp(-inverseSampleRate * std::exp(5.5f - 0.075f * decayParam->get()));
+
+    synth.envSustain = sustainParam->get() / 100.0f;
+
+    float envRelease = releaseParam->get();
+    if (envRelease < 1.0f) {
+        synth.envRelease = 0.75f;  // extra fast release
+    } else {
+        synth.envRelease = std::exp(-inverseSampleRate * std::exp(5.5f - 0.075f * envRelease));
+    }
 }
 
 void LMP_MK1AudioProcessor::splitBufferByEvents(juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
@@ -264,11 +277,33 @@ LMP_MK1AudioProcessor::createParameterLayout()
     juce::AudioParameterFloatAttributes().withLabel("%")));
 
     layout.add(std::make_unique<juce::AudioParameterFloat>(
-    ParameterID::decay,
-    "decay",
-    juce::NormalisableRange<float>(0.01f, 5.0f, 0.01f),
-    0.5f,
-    juce::AudioParameterFloatAttributes().withLabel(" s")));
+    ParameterID::attack,
+    "attack",
+    juce::NormalisableRange<float>(0.0f, 100.0f, 1.0f),
+    0.0f,
+    juce::AudioParameterFloatAttributes().withLabel("%")));
+
+    layout.add(std::make_unique<juce::AudioParameterFloat>(
+        ParameterID::decay,
+        "decay",
+        juce::NormalisableRange<float>(0.0f, 100.0f, 1.0f),
+        50.0f,
+        juce::AudioParameterFloatAttributes().withLabel("%")));
+
+    layout.add(std::make_unique<juce::AudioParameterFloat>(
+        ParameterID::sustain,
+        "sustain",
+        juce::NormalisableRange<float>(0.0f, 100.0f, 1.0f),
+        100.0f,
+        juce::AudioParameterFloatAttributes().withLabel("%")));
+
+    layout.add(std::make_unique<juce::AudioParameterFloat>(
+        ParameterID::release,
+        "release",
+        juce::NormalisableRange<float>(0.0f, 100.0f, 1.0f),
+        30.0f,
+        juce::AudioParameterFloatAttributes().withLabel("%")));
+
     return layout;
 }
 
