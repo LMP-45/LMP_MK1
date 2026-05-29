@@ -26,6 +26,8 @@ private:
     juce::Slider releaseSlider;
     juce::Slider sustainSlider;
 
+    juce::Slider polyphonySlider;
+
     using SliderAttachment =
     juce::AudioProcessorValueTreeState::SliderAttachment;
 
@@ -36,6 +38,8 @@ private:
     std::unique_ptr<SliderAttachment> attackAttachment;
     std::unique_ptr<SliderAttachment> releaseAttachment;
     std::unique_ptr<SliderAttachment> sustainAttachment;
+
+    std::unique_ptr<SliderAttachment> polyphonyAttachment;
 
 
 

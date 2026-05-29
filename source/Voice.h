@@ -27,20 +27,17 @@ struct Voice
         env.reset();
     }
     // add this method
-    float render()
+    float render(float envelope)
     {
         float sample = osc.nextSample() * level;
-        float envelope = env.nextValue();
         return sample * envelope;
-
     }
 
-    float render2()
+    float render2(float envelope)
     {
         float sample = osc2.nextSample();
         saw = saw * 0.997f + sample;
-        // these lines are new
-        float envelope = env.nextValue();
+
         return saw * envelope;
     }
 

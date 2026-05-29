@@ -61,6 +61,17 @@ LMP_MK1AudioProcessorEditor::LMP_MK1AudioProcessorEditor
         20);
     addAndMakeVisible(releaseSlider);
 
+    polyphonySlider.setSliderStyle(
+    juce::Slider::LinearVertical);
+
+    polyphonySlider.setTextBoxStyle(
+        juce::Slider::TextBoxBelow,
+        false,
+        60,
+        20);
+    addAndMakeVisible(polyphonySlider);
+
+
     // APVTS attachments
     osc1Attachment = std::make_unique<SliderAttachment>(
         audioProcessor.apvts,
@@ -87,6 +98,10 @@ LMP_MK1AudioProcessorEditor::LMP_MK1AudioProcessorEditor
     sustainAttachment = std::make_unique<SliderAttachment>(
        audioProcessor.apvts,
        "sustain", sustainSlider);
+
+    polyphonyAttachment = std::make_unique<SliderAttachment>(
+       audioProcessor.apvts,
+       "polyphony", polyphonySlider);
 
     setSize(700, 500);
 }
@@ -126,6 +141,10 @@ void LMP_MK1AudioProcessorEditor::paint (juce::Graphics& g)
                370, 200, 100, 50,
                juce::Justification::centred);
 
+    g.drawText("polyphony",
+              160, 320, 100, 30,
+              juce::Justification::centred);
+
 }
 
 void LMP_MK1AudioProcessorEditor::resized()
@@ -137,5 +156,7 @@ void LMP_MK1AudioProcessorEditor::resized()
     attackSlider.setBounds(250, 110, 60, 100);
     releaseSlider.setBounds(460, 110, 60, 100);
     sustainSlider.setBounds(390, 110, 60, 100);
+
+    polyphonySlider.setBounds(180, 350, 60, 100);
 }
 

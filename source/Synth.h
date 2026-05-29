@@ -26,6 +26,11 @@ public:
     float envAttack;
     float envSustain;
     float envRelease;
+
+    static constexpr int MAX_VOICES = 8;
+    int numVoices;
+    std::array<Voice, MAX_VOICES> voices;
+
 private:
 
     void noteOn(int note, int velocity);

@@ -12,6 +12,7 @@ namespace ParameterID
     PARAMETER_ID (attack)
     PARAMETER_ID (release)
     PARAMETER_ID (sustain)
+    PARAMETER_ID (polyphony)
 #undef PARAMETER_ID
 }
 
@@ -79,6 +80,8 @@ private:
     juce::AudioParameterFloat* attackParam;
     juce::AudioParameterFloat* releaseParam;
     juce::AudioParameterFloat* sustainParam;
+
+    juce::AudioParameterFloat* polyphonyParam;
 
     std::atomic<bool> parameterChanged {false };
 

@@ -26,7 +26,10 @@ void Synth::deallocateResources()
 }
 void Synth::reset()
 {
-    voice.reset();
+    for (auto& voice : voices)
+    {
+        voice.reset();
+    }
     noiseGen.reset();
 }
 void Synth::render(float** outputBuffers, int sampleCount)
@@ -36,32 +39,39 @@ void Synth::render(float** outputBuffers, int sampleCount)
 
     for (int sample = 0; sample < sampleCount; ++sample)
     {
-        float output = 0.0f;
-        float output2 = 0.0f;
+        float mix = 0.0f;
 
-        if (voice.env.isActive())
+        // advance smoothers ONCE per sample
+        float osc1Gain = outputLevelSmoother.getNextValue();
+        float osc2Gain = output2LevelSmoother.getNextValue();
+
+        for (int v = 0; v < numVoices; ++v)
         {
-            output = voice.render();
-            output2 = voice.render2();
-            // smooth volume
-            output *= outputLevelSmoother.getNextValue();
-            output2 *= output2LevelSmoother.getNextValue();
+            auto& voice = voices[v];
 
+            if (voice.env.isActive())
+            {
+                float env = voice.env.nextValue();
+
+                float output1 = voice.render(env) * osc1Gain;
+                float output2 = voice.render2(env) * osc2Gain;
+
+                mix += (output1 + output2) * 0.125f;
+            }
         }
 
-        outputBufferLeft[sample] = output + output2;
+        outputBufferLeft[sample] = mix;
 
         if (outputBufferRight != nullptr)
-            outputBufferRight[sample] = output + output2;
-    }
-
-    if (!voice.env.isActive()) {
-        voice.env.reset();
+            outputBufferRight[sample] = mix;
     }
 
     protectYourEars(outputBufferLeft, sampleCount);
-    protectYourEars(outputBufferRight, sampleCount);
+
+    if (outputBufferRight != nullptr)
+        protectYourEars(outputBufferRight, sampleCount);
 }
+
 void Synth::midiMessage(uint8_t data0, uint8_t data1, uint8_t data2)
 {
     switch (data0 & 0xF0) {
@@ -85,36 +95,58 @@ void Synth::midiMessage(uint8_t data0, uint8_t data1, uint8_t data2)
 
 void Synth::noteOn(int note, int velocity)
 {
+    Voice* freeVoice = nullptr;
+
+    // find inactive voice
+    for (int v = 0; v < numVoices; ++v)
+    {
+        if (!voices[v].env.isActive())
+        {
+            freeVoice = &voices[v];
+            break;
+        }
+    }
+
+    // if all voices busy, steal first voice
+    if (freeVoice == nullptr)
+    {
+        freeVoice = &voices[0];
+    }
+
+    auto& voice = *freeVoice;
+
     voice.note = note;
 
-    float freq = 440.0f * std::exp2(float(note - 69) / 12.0f); // this changed
+    float freq = 440.0f * std::exp2(float(note - 69) / 12.0f);
+
     voice.osc.amplitude = velocity / 127.0f;
     voice.osc.inc = freq / sampleRate;
     voice.osc.reset();
 
-
-   float freq2 = 440.0f * std::exp2(float(note - 69) / 12.0f); // this changed
     voice.osc2.amplitude = (velocity / 127.0f) * 0.5f;
-    voice.osc2.period = sampleRate / freq2;
+    voice.osc2.period = sampleRate / freq;
     voice.osc2.reset();
 
-
-
-
-
     Envelope& env = voice.env;
+
     env.attackMultiplier = envAttack;
     env.decayMultiplier = envDecay;
     env.sustainLevel = envSustain;
     env.releaseMultiplier = envRelease;
-    env.attack();
 
+    env.attack();
 }
 
 void Synth::noteOff(int note)
 {
-    if (voice.note == note) {
-        voice.release();
+    for (int v = 0; v < numVoices; ++v)
+    {
+        auto& voice = voices[v];
+
+        if (voice.note == note && voice.env.isActive())
+        {
+            voice.release();
+        }
     }
 }
 

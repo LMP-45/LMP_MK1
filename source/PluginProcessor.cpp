@@ -22,6 +22,7 @@ LMP_MK1AudioProcessor::LMP_MK1AudioProcessor()
     castParameter(apvts, ParameterID::release, releaseParam);
     castParameter(apvts, ParameterID::attack, attackParam);
     castParameter(apvts, ParameterID::sustain, sustainParam);
+    castParameter(apvts, ParameterID::polyphony, polyphonyParam);
     apvts.state.addListener(this);
 }
 
@@ -178,6 +179,9 @@ void LMP_MK1AudioProcessor::update ()
     } else {
         synth.envRelease = std::exp(-inverseSampleRate * std::exp(5.5f - 0.075f * envRelease));
     }
+
+    synth.numVoices = static_cast<int>(polyphonyParam->get());
+
 }
 
 void LMP_MK1AudioProcessor::splitBufferByEvents(juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
@@ -303,6 +307,13 @@ LMP_MK1AudioProcessor::createParameterLayout()
         juce::NormalisableRange<float>(0.0f, 100.0f, 1.0f),
         30.0f,
         juce::AudioParameterFloatAttributes().withLabel("%")));
+
+    layout.add(std::make_unique<juce::AudioParameterFloat>(
+    ParameterID::polyphony,
+    "polyphony",
+    juce::NormalisableRange<float>(1.0f, 8.0f, 1.0f),
+    1.0f,
+    juce::AudioParameterFloatAttributes().withLabel("voices")));
 
     return layout;
 }
