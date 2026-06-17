@@ -28,6 +28,9 @@ private:
 
     juce::Slider polyphonySlider;
 
+    juce::Slider lfoRateSlider;
+    juce::Slider lfoDepthSlider;
+
     using SliderAttachment =
     juce::AudioProcessorValueTreeState::SliderAttachment;
 
@@ -41,7 +44,8 @@ private:
 
     std::unique_ptr<SliderAttachment> polyphonyAttachment;
 
-
+    std::unique_ptr<SliderAttachment> lfoRateAttachment;
+    std::unique_ptr<SliderAttachment> lfoDepthAttachment;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (LMP_MK1AudioProcessorEditor)
 };

@@ -22,7 +22,12 @@ LMP_MK1AudioProcessor::LMP_MK1AudioProcessor()
     castParameter(apvts, ParameterID::release, releaseParam);
     castParameter(apvts, ParameterID::attack, attackParam);
     castParameter(apvts, ParameterID::sustain, sustainParam);
+
     castParameter(apvts, ParameterID::polyphony, polyphonyParam);
+
+    castParameter(apvts, ParameterID::lfoRate, lfoRateParam);
+    castParameter(apvts, ParameterID::lfoDepth, lfoDepthParam);
+
     apvts.state.addListener(this);
 }
 
@@ -182,6 +187,11 @@ void LMP_MK1AudioProcessor::update ()
 
     synth.numVoices = static_cast<int>(polyphonyParam->get());
 
+    const float inverseUpdateRate = inverseSampleRate * synth.LFO_MAX;
+    float lfoRate = std::exp(7.0f * lfoRateParam->get() - 4.0f);
+    synth.lfoInc = lfoRate * inverseUpdateRate * float(TWO_PI);
+    synth.lfoDepth = lfoDepthParam->get();
+
 }
 
 void LMP_MK1AudioProcessor::splitBufferByEvents(juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
@@ -314,6 +324,36 @@ LMP_MK1AudioProcessor::createParameterLayout()
     juce::NormalisableRange<float>(1.0f, 8.0f, 1.0f),
     1.0f,
     juce::AudioParameterFloatAttributes().withLabel("voices")));
+
+
+    auto lfoRateStringFromValue = [](float value, int)
+    {
+        float lfoHz = std::exp(7.0f * value - 4.0f);
+        return juce::String(lfoHz, 3);
+    };
+
+    layout.add(std::make_unique<juce::AudioParameterFloat>(
+    ParameterID::lfoRate,
+    "lfoRate",
+    juce::NormalisableRange<float>(),
+    0.81f,
+    juce::AudioParameterFloatAttributes()
+    .withLabel("Hz")
+    .withStringFromValueFunction(lfoRateStringFromValue)));
+
+    auto lfoDepthStringFromValue = [](float value, int)
+    {
+        return juce::String(value * 100.0f, 1);
+    };
+
+    layout.add(std::make_unique<juce::AudioParameterFloat>(
+        ParameterID::lfoDepth,
+        "lfoDepth",
+        juce::NormalisableRange<float>(0.0f, 1.0f),
+        0.5f,
+        juce::AudioParameterFloatAttributes()
+            .withLabel("%")
+            .withStringFromValueFunction(lfoDepthStringFromValue)));
 
     return layout;
 }

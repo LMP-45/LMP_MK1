@@ -8,6 +8,8 @@
 Synth::Synth()
 {
     sampleRate = 44100.0f;
+    lfo = 0.0f;
+    lfoValue = 0.0f;
 }
 void Synth::allocateResources(double sampleRate_, int /*samplesPerBlock*/)
 {
@@ -31,6 +33,10 @@ void Synth::reset()
         voice.reset();
     }
     noiseGen.reset();
+
+    lfo = 0.0f;
+    lfoValue = 0.0f;
+    lfoStep = 0;
 }
 void Synth::render(float** outputBuffers, int sampleCount)
 {
@@ -39,6 +45,7 @@ void Synth::render(float** outputBuffers, int sampleCount)
 
     for (int sample = 0; sample < sampleCount; ++sample)
     {
+        updateLFO();
         float mix = 0.0f;
 
         // advance smoothers ONCE per sample
@@ -121,11 +128,11 @@ void Synth::noteOn(int note, int velocity)
 
     voice.osc.amplitude = velocity / 127.0f;
     voice.osc.inc = freq / sampleRate;
-    voice.osc.reset();
+    voice.osc.modulation = 1.0f;
 
     voice.osc2.amplitude = (velocity / 127.0f) * 0.5f;
     voice.osc2.period = sampleRate / freq;
-    voice.osc2.reset();
+    voice.osc2.modulation = 1.0f;
 
     Envelope& env = voice.env;
 
@@ -135,6 +142,7 @@ void Synth::noteOn(int note, int velocity)
     env.releaseMultiplier = envRelease;
 
     env.attack();
+
 }
 
 void Synth::noteOff(int note)
@@ -169,4 +177,32 @@ void Synth::update2(float volumeParam2)
     volume2 *= volume2;
 
     output2LevelSmoother.setTargetValue(volume2);
+}
+
+void Synth::updateLFO()
+{
+    if (--lfoStep <= 0)
+    {
+        lfoStep = LFO_MAX;
+
+        lfo += lfoInc;
+
+        if (lfo > PI)
+            lfo -= TWO_PI;
+
+        lfoValue = std::sin(lfo);
+
+        float vibratoMod = 1.0f + lfoValue * lfoDepth;
+
+        for (int v = 0; v < MAX_VOICES; ++v)
+        {
+            Voice& voice = voices[v];
+
+            if (voice.env.isActive())
+            {
+                voice.osc.modulation = vibratoMod;
+                voice.osc2.modulation = vibratoMod;
+            }
+        }
+    }
 }

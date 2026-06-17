@@ -71,6 +71,20 @@ LMP_MK1AudioProcessorEditor::LMP_MK1AudioProcessorEditor
         20);
     addAndMakeVisible(polyphonySlider);
 
+    lfoRateSlider.setSliderStyle(juce::Slider::RotaryHorizontalVerticalDrag);
+    lfoRateSlider.setTextBoxStyle(juce::Slider::TextBoxBelow,
+        false,
+        60,
+        20);
+    addAndMakeVisible(lfoRateSlider);
+
+    lfoDepthSlider.setSliderStyle(juce::Slider::RotaryHorizontalVerticalDrag);
+    lfoDepthSlider.setTextBoxStyle(juce::Slider::TextBoxBelow,
+        false,
+        60,
+        20);
+    addAndMakeVisible(lfoDepthSlider);
+
 
     // APVTS attachments
     osc1Attachment = std::make_unique<SliderAttachment>(
@@ -102,6 +116,17 @@ LMP_MK1AudioProcessorEditor::LMP_MK1AudioProcessorEditor
     polyphonyAttachment = std::make_unique<SliderAttachment>(
        audioProcessor.apvts,
        "polyphony", polyphonySlider);
+
+    lfoRateAttachment = std::make_unique<SliderAttachment>(
+       audioProcessor.apvts,
+       "lfoRate", lfoRateSlider);
+
+    lfoDepthAttachment = std::make_unique<SliderAttachment>(
+       audioProcessor.apvts,
+       "lfoDepth", lfoDepthSlider);
+
+
+
 
     setSize(700, 500);
 }
@@ -145,6 +170,14 @@ void LMP_MK1AudioProcessorEditor::paint (juce::Graphics& g)
               160, 320, 100, 30,
               juce::Justification::centred);
 
+    g.drawText("LFO Depth",
+    300, 320, 100, 30,
+             juce::Justification::centred);
+
+    g.drawText("LFO Rate",
+            230, 320, 100, 30,
+            juce::Justification::centred);
+
 }
 
 void LMP_MK1AudioProcessorEditor::resized()
@@ -158,5 +191,8 @@ void LMP_MK1AudioProcessorEditor::resized()
     sustainSlider.setBounds(390, 110, 60, 100);
 
     polyphonySlider.setBounds(180, 350, 60, 100);
+
+    lfoRateSlider.setBounds(250, 350, 60, 100);
+    lfoDepthSlider.setBounds(320, 350, 60, 100);
 }
 

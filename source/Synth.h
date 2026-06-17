@@ -31,12 +31,24 @@ public:
     int numVoices;
     std::array<Voice, MAX_VOICES> voices;
 
+    const int LFO_MAX = 32;
+    float lfoInc;
+
+    float lfoPitch;
+    float lfoValue = 0.0f;
+    float lfoDepth;
+
 private:
 
     void noteOn(int note, int velocity);
     void noteOff(int note);
+    void updateLFO();
 
     float sampleRate;
+
+    int lfoStep;
+    float lfo;
+
 
     Voice voice;public:
     NoiseGenerator noiseGen;
