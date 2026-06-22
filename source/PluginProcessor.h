@@ -15,6 +15,7 @@ namespace ParameterID
     PARAMETER_ID (polyphony)
     PARAMETER_ID (lfoRate)
     PARAMETER_ID (lfoDepth)
+    PARAMETER_ID (lfoWaveform)
 
 
 #undef PARAMETER_ID
@@ -89,6 +90,8 @@ private:
 
     juce::AudioParameterFloat* lfoRateParam;
     juce::AudioParameterFloat* lfoDepthParam;
+
+    juce::AudioParameterChoice* lfoWaveformParam;
 
     std::atomic<bool> parameterChanged {false };
 

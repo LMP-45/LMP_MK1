@@ -122,17 +122,25 @@ void Synth::noteOn(int note, int velocity)
 
     auto& voice = *freeVoice;
 
+
+
     voice.note = note;
 
     float freq = 440.0f * std::exp2(float(note - 69) / 12.0f);
 
     voice.osc.amplitude = velocity / 127.0f;
     voice.osc.inc = freq / sampleRate;
-    voice.osc.modulation = 1.0f;
+    //voice.osc.modulation = 1.0f;
 
     voice.osc2.amplitude = (velocity / 127.0f) * 0.5f;
     voice.osc2.period = sampleRate / freq;
-    voice.osc2.modulation = 1.0f;
+    //voice.osc2.modulation = 1.0f;
+
+    voice.baseInc = freq / sampleRate;
+    voice.osc.inc = voice.baseInc;
+
+    voice.basePeriod = sampleRate / freq;
+    voice.osc2.period = voice.basePeriod;
 
     Envelope& env = voice.env;
 
@@ -190,18 +198,46 @@ void Synth::updateLFO()
         if (lfo > PI)
             lfo -= TWO_PI;
 
-        lfoValue = std::sin(lfo);
+        switch (lfoWaveform)
+        {
+        case 0: // Sine
+            lfoValue = std::sin(lfo);
+            break;
 
-        float vibratoMod = 1.0f + lfoValue * lfoDepth;
+        case 1: // Triangle
+            {
+                float phase = (lfo + PI) / TWO_PI; // 0..1
+                lfoValue = 1.0f - 4.0f * std::abs(phase - 0.5f);
+                break;
+            }
 
-        for (int v = 0; v < MAX_VOICES; ++v)
+        case 2: // Saw
+            {
+                float phase = (lfo + PI) / TWO_PI; // 0..1
+                lfoValue = 2.0f * phase - 1.0f;
+                break;
+            }
+
+        case 3: // Square
+            {
+                lfoValue = (std::sin(lfo) >= 0.0f) ? 1.0f : -1.0f;
+                break;
+            }
+        }
+
+        float vibratoMod = 1.0f + lfoValue * lfoDepth * 0.05f;
+
+
+
+        for (int v = 0; v < numVoices; ++v)
         {
             Voice& voice = voices[v];
 
             if (voice.env.isActive())
             {
-                voice.osc.modulation = vibratoMod;
-                voice.osc2.modulation = vibratoMod;
+                voice.osc.setInc(voice.baseInc * vibratoMod);
+
+                voice.osc2.period = voice.basePeriod / vibratoMod;
             }
         }
     }

@@ -27,6 +27,7 @@ LMP_MK1AudioProcessor::LMP_MK1AudioProcessor()
 
     castParameter(apvts, ParameterID::lfoRate, lfoRateParam);
     castParameter(apvts, ParameterID::lfoDepth, lfoDepthParam);
+    castParameter(apvts, ParameterID::lfoWaveform, lfoWaveformParam);
 
     apvts.state.addListener(this);
 }
@@ -192,6 +193,7 @@ void LMP_MK1AudioProcessor::update ()
     synth.lfoInc = lfoRate * inverseUpdateRate * float(TWO_PI);
     synth.lfoDepth = lfoDepthParam->get();
 
+    synth.lfoWaveform = lfoWaveformParam->getIndex();
 }
 
 void LMP_MK1AudioProcessor::splitBufferByEvents(juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
@@ -354,6 +356,12 @@ LMP_MK1AudioProcessor::createParameterLayout()
         juce::AudioParameterFloatAttributes()
             .withLabel("%")
             .withStringFromValueFunction(lfoDepthStringFromValue)));
+
+    layout.add(std::make_unique<juce::AudioParameterChoice>(
+    ParameterID::lfoWaveform,
+    "LFO Waveform",
+    juce::StringArray{ "Sine", "Triangle", "Saw", "Square" },
+    0)); // default = Sine
 
     return layout;
 }

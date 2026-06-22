@@ -15,6 +15,8 @@ struct Voice
     Oscillator osc;
     Oscillator2 osc2;
     Envelope env;
+    float baseInc = 0.0f;
+    float basePeriod = 0.0f;
 
     float level = 1.0f;
     float saw;

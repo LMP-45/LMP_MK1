@@ -38,6 +38,8 @@ public:
     float lfoValue = 0.0f;
     float lfoDepth;
 
+    int lfoWaveform = 0;
+
 private:
 
     void noteOn(int note, int velocity);

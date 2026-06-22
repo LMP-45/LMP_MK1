@@ -85,6 +85,15 @@ LMP_MK1AudioProcessorEditor::LMP_MK1AudioProcessorEditor
         20);
     addAndMakeVisible(lfoDepthSlider);
 
+    lfoWaveform.addItem("Sine", 1);
+    lfoWaveform.addItem("Triangle", 2);
+    lfoWaveform.addItem("Saw", 3);
+    lfoWaveform.addItem("Square", 4);
+
+    lfoWaveform.setSelectedId(1);
+
+    addAndMakeVisible(lfoWaveform);
+
 
     // APVTS attachments
     osc1Attachment = std::make_unique<SliderAttachment>(
@@ -125,8 +134,11 @@ LMP_MK1AudioProcessorEditor::LMP_MK1AudioProcessorEditor
        audioProcessor.apvts,
        "lfoDepth", lfoDepthSlider);
 
-
-
+    lfoWaveformAttachment =
+        std::make_unique<ComboBoxAttachment>(
+            audioProcessor.apvts,
+            "lfoWaveform",
+            lfoWaveform);
 
     setSize(700, 500);
 }
@@ -178,6 +190,10 @@ void LMP_MK1AudioProcessorEditor::paint (juce::Graphics& g)
             230, 320, 100, 30,
             juce::Justification::centred);
 
+    g.drawText("LFO Waveform",
+           400, 320, 100, 30,
+           juce::Justification::centred);
+
 }
 
 void LMP_MK1AudioProcessorEditor::resized()
@@ -194,5 +210,7 @@ void LMP_MK1AudioProcessorEditor::resized()
 
     lfoRateSlider.setBounds(250, 350, 60, 100);
     lfoDepthSlider.setBounds(320, 350, 60, 100);
+
+    lfoWaveform.setBounds(400, 350, 100, 25);
 }
 

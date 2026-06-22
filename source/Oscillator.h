@@ -15,7 +15,12 @@ public:
     float amplitude = 1.0f;
     float inc = 0.0f;
     float phase = 0.0f;
-    float modulation = 1.0f;
+
+    void setInc(float newInc)
+    {
+        inc = newInc;
+        dsin = 2.0f * std::cos(inc * TWO_PI);
+    }
 
     void reset()
     {
@@ -29,9 +34,7 @@ public:
 
     float nextSample()
     {
-        float modDsin = 2.0f * std::cos((inc * modulation) * TWO_PI);
-
-        float sinx = modDsin * sin0 - sin1;
+        float sinx = dsin * sin0 - sin1;
 
         sin1 = sin0;
         sin0 = sinx;

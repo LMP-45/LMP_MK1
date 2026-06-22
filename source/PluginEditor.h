@@ -31,6 +31,8 @@ private:
     juce::Slider lfoRateSlider;
     juce::Slider lfoDepthSlider;
 
+    juce::ComboBox lfoWaveform;
+
     using SliderAttachment =
     juce::AudioProcessorValueTreeState::SliderAttachment;
 
@@ -46,6 +48,13 @@ private:
 
     std::unique_ptr<SliderAttachment> lfoRateAttachment;
     std::unique_ptr<SliderAttachment> lfoDepthAttachment;
+
+    using ComboBoxAttachment =
+    juce::AudioProcessorValueTreeState::ComboBoxAttachment;
+
+    std::unique_ptr<ComboBoxAttachment> lfoWaveformAttachment;
+
+
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (LMP_MK1AudioProcessorEditor)
 };
